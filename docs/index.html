@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ableton MCP - NFL Production Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            overflow-x: auto;
+        }
+        
+        .success-metrics {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .success-metrics h3 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .metrics-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .metrics-list li {
+            padding: 8px 0;
+            font-size: 1.1rem;
+        }
+        
+        .metrics-list li:before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 Ableton MCP</h1>
+            <p>NFL Production Tools & Model Context Protocol Server</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature">
+                <div class="feature-icon">🎛️</div>
+                <h3>MCP Server</h3>
+                <p>Direct Ableton Live control through Cline AI with full Remote Script integration</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">✂️</div>
+                <h3>Mix Chopper</h3>
+                <p>Automatically slice audio mixes based on precise timestamps for NFL production</p>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🏈</div>
+                <h3>NFL Workflow</h3>
+                <p>Professional broadcast-quality timing with zero tolerance for errors</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🚀 Quick Setup</h2>
+            <p>Get your MCP server running in minutes:</p>
+            
+            <div class="code-block">
+# 1. Install the Remote Script
+cd tools/
+./install_mcp.sh
+
+# 2. Configure in Ableton Live
+# Go to Live → Preferences → Link, Tempo & MIDI
+# Set Control Surface to "AbletonMCP"
+
+# 3. Start the MCP Server
+source .venv/bin/activate
+python MCP_Server/server.py
+            </div>
+            
+            <a href="https://github.com/Ukiiki/ableton-mcp-backup" class="btn">📁 View on GitHub</a>
+            <a href="https://github.com/Ukiiki/ableton-mcp-backup/blob/main/tools/Manual_MCP_Installation.md" class="btn">📖 Installation Guide</a>
+        </div>
+        
+        <div class="card">
+            <h2>🎵 NFL Production Workflow</h2>
+            <p>For NFL halftime show production with exact timing requirements:</p>
+            
+            <ol style="margin: 20px 0; padding-left: 30px;">
+                <li><strong>Use mix_chopper.py</strong> to create initial segments</li>
+                <li><strong>Follow NFL_Ableton_Workflow.md</strong> for precision editing</li>
+                <li><strong>Use MCP tools</strong> for automated Ableton control</li>
+            </ol>
+            
+            <a href="https://github.com/Ukiiki/ableton-mcp-backup/blob/main/tools/NFL_Ableton_Workflow.md" class="btn">🏈 NFL Workflow Guide</a>
+            <a href="https://github.com/Ukiiki/ableton-mcp-backup/blob/main/tools/mix_chopper.py" class="btn">✂️ Mix Chopper Tool</a>
+        </div>
+        
+        <div class="success-metrics">
+            <h3>🏈 NFL Success Metrics</h3>
+            <ul class="metrics-list">
+                <li>Exact timing achieved (7:00.000, 3:00.000, 2:30.000)</li>
+                <li>Professional broadcast quality</li>
+                <li>Zero tolerance for timing errors</li>
+                <li>Smooth, beat-matched transitions</li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h2>📁 What's Included</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div>
+                    <h4>🔧 Core MCP Components</h4>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>MCP Server</li>
+                        <li>Ableton Remote Script</li>
+                        <li>Python virtual environment</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4>🎵 Production Tools</h4>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>mix_chopper.py</li>
+                        <li>segment_exporter.py</li>
+                        <li>install_mcp.sh</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4>📖 Documentation</h4>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>NFL Workflow Guide</li>
+                        <li>Installation Manual</li>
+                        <li>Complete README</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🔧 Requirements</h2>
+            <ul style="margin: 20px 0; padding-left: 30px;">
+                <li>Python 3.9+</li>
+                <li>Ableton Live 12</li>
+                <li>pydub (for audio processing)</li>
+                <li>ffmpeg (for audio format support)</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>🎵 Built for NFL-precision audio production • Enhanced MCP server by UKIIKI</p>
+            <p>Original MCP server by ahujasid • Backup created August 2025</p>
+        </div>
+    </div>
+</body>
+</html>
