@@ -183,12 +183,8 @@ async def server_lifespan(server: FastMCP) -> AsyncIterator[Dict[str, Any]]:
             _ableton_connection = None
         logger.info("AbletonMCP server shut down")
 
-# Create the MCP server with lifespan support
-mcp = FastMCP(
-    "AbletonMCP",
-    description="Ableton Live integration through the Model Context Protocol",
-    lifespan=server_lifespan
-)
+# Create the MCP server
+mcp = FastMCP("AbletonMCP")
 
 # Global connection for resources
 _ableton_connection = None
@@ -651,6 +647,158 @@ def load_drum_kit(ctx: Context, track_index: int, rack_uri: str, kit_path: str) 
     except Exception as e:
         logger.error(f"Error loading drum kit: {str(e)}")
         return f"Error loading drum kit: {str(e)}"
+
+# Audio Editing Tools for Mix Chopping
+
+@mcp.tool()
+def create_audio_track(ctx: Context, index: int = -1) -> str:
+    """
+    Create a new audio track in the Ableton session.
+    
+    Parameters:
+    - index: The index to insert the track at (-1 = end of list)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("create_audio_track", {"index": index})
+        return f"Created new audio track: {result.get('name', 'unknown')}"
+    except Exception as e:
+        logger.error(f"Error creating audio track: {str(e)}")
+        return f"Error creating audio track: {str(e)}"
+
+@mcp.tool()
+def load_audio_file(ctx: Context, file_path: str, track_index: int = 0, clip_slot_index: int = 0) -> str:
+    """
+    Load an audio file into a specific track and clip slot.
+    
+    Parameters:
+    - file_path: Full path to the audio file
+    - track_index: The index of the track to load into (default: 0)
+    - clip_slot_index: The index of the clip slot to load into (default: 0)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("load_audio_file", {
+            "file_path": file_path,
+            "track_index": track_index,
+            "clip_slot_index": clip_slot_index
+        })
+        return f"Loaded audio file '{file_path}' into track {track_index}, slot {clip_slot_index}. Clip length: {result.get('clip_length', 'unknown')} beats"
+    except Exception as e:
+        logger.error(f"Error loading audio file: {str(e)}")
+        return f"Error loading audio file: {str(e)}"
+
+@mcp.tool()
+def slice_audio_at_times(ctx: Context, track_index: int, clip_slot_index: int, slice_times: List[float]) -> str:
+    """
+    Create slices in an audio clip at specified times (for precise cutting).
+    
+    Parameters:
+    - track_index: The index of the track containing the audio clip
+    - clip_slot_index: The index of the clip slot containing the audio clip
+    - slice_times: List of times (in beats or seconds) where to create slices
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("slice_audio_at_times", {
+            "track_index": track_index,
+            "clip_slot_index": clip_slot_index,
+            "slice_times": slice_times
+        })
+        return f"Created {result.get('slices_created', 0)} slices at times: {slice_times}"
+    except Exception as e:
+        logger.error(f"Error slicing audio: {str(e)}")
+        return f"Error slicing audio: {str(e)}"
+
+@mcp.tool()
+def remove_audio_section(ctx: Context, track_index: int, clip_slot_index: int, start_time: float, end_time: float) -> str:
+    """
+    Remove a section of audio between two timestamps (for cutting out unwanted parts).
+    
+    Parameters:
+    - track_index: The index of the track containing the audio clip
+    - clip_slot_index: The index of the clip slot containing the audio clip
+    - start_time: Start time of the section to remove (in beats or seconds)
+    - end_time: End time of the section to remove (in beats or seconds)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("remove_audio_section", {
+            "track_index": track_index,
+            "clip_slot_index": clip_slot_index,
+            "start_time": start_time,
+            "end_time": end_time
+        })
+        return f"Removed section from {start_time} to {end_time}. New clip length: {result.get('new_length', 'unknown')} beats"
+    except Exception as e:
+        logger.error(f"Error removing audio section: {str(e)}")
+        return f"Error removing audio section: {str(e)}"
+
+@mcp.tool()
+def export_audio(ctx: Context, output_path: str, track_index: int = None) -> str:
+    """
+    Export audio from the session to a file.
+    
+    Parameters:
+    - output_path: Full path where to save the exported audio file
+    - track_index: Index of specific track to export (None = export entire session)
+    """
+    try:
+        ableton = get_ableton_connection()
+        result = ableton.send_command("export_audio", {
+            "output_path": output_path,
+            "track_index": track_index
+        })
+        return f"Exported audio to: {result.get('exported_to', output_path)}"
+    except Exception as e:
+        logger.error(f"Error exporting audio: {str(e)}")
+        return f"Error exporting audio: {str(e)}"
+
+@mcp.tool()
+def batch_slice_and_remove(ctx: Context, track_index: int, clip_slot_index: int, cut_sections: List[Dict[str, float]]) -> str:
+    """
+    Batch operation to slice audio and remove multiple sections in one go.
+    Perfect for chopping a mix based on customer timestamps.
+    
+    Parameters:
+    - track_index: The index of the track containing the audio clip
+    - clip_slot_index: The index of the clip slot containing the audio clip
+    - cut_sections: List of dictionaries with 'start' and 'end' times for sections to remove
+                   Example: [{"start": 30.5, "end": 45.2}, {"start": 120.0, "end": 135.8}]
+    """
+    try:
+        ableton = get_ableton_connection()
+        
+        # First, create slices at all the cut points
+        all_slice_times = []
+        for section in cut_sections:
+            all_slice_times.extend([section["start"], section["end"]])
+        
+        # Remove duplicates and sort
+        all_slice_times = sorted(list(set(all_slice_times)))
+        
+        # Create slices
+        slice_result = ableton.send_command("slice_audio_at_times", {
+            "track_index": track_index,
+            "clip_slot_index": clip_slot_index,
+            "slice_times": all_slice_times
+        })
+        
+        # Remove each section (process in reverse order to maintain indices)
+        removed_sections = []
+        for section in reversed(cut_sections):
+            remove_result = ableton.send_command("remove_audio_section", {
+                "track_index": track_index,
+                "clip_slot_index": clip_slot_index,
+                "start_time": section["start"],
+                "end_time": section["end"]
+            })
+            removed_sections.append(f"{section['start']}-{section['end']}")
+        
+        return f"Batch operation complete! Created {len(all_slice_times)} slices and removed {len(cut_sections)} sections: {', '.join(removed_sections)}"
+    except Exception as e:
+        logger.error(f"Error in batch slice and remove: {str(e)}")
+        return f"Error in batch slice and remove: {str(e)}"
 
 # Main execution
 def main():
